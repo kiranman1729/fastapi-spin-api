@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+lark
+python-multipart

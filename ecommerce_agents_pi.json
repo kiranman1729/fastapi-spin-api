@@ -1,0 +1,105 @@
+{
+    "agents": {
+        "BuyerAgent_main": {
+            "params": [
+                "u",
+                "w",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "InfPay",
+                "Payment"
+            ],
+            "body": "'u<CFP>.u(msg).[msg=PriceInfo](BuyerAgent_RefuseBranch(u, w, CFP, PriceInfo, Refuse, Buy, Deliver, InfPay, Payment) + BuyerAgent_BuyBranch(u, w, CFP, PriceInfo, Refuse, Buy, Deliver, InfPay, Payment))"
+        },
+        "BuyerAgent_RefuseBranch": {
+            "params": [
+                "u",
+                "w",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "InfPay",
+                "Payment"
+            ],
+            "body": "'u<Refuse>.BuyerAgent_main(u, w, CFP, PriceInfo, Refuse, Buy, Deliver, InfPay, Payment)"
+        },
+        "BuyerAgent_BuyBranch": {
+            "params": [
+                "u",
+                "w",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "InfPay",
+                "Payment"
+            ],
+            "body": "'u<Buy>.w(msg1).[msg1=InfPay]'w<Payment>.u(msg2).[msg2=Deliver]BuyerAgent_main(u, w, CFP, PriceInfo, Refuse, Buy, Deliver, InfPay, Payment)"
+        },
+        "SellerAgent_main": {
+            "params": [
+                "u",
+                "v",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "ReqPay",
+                "PaySuc"
+            ],
+            "body": "u(msg).[msg=CFP]('u<PriceInfo>.u(msg1).([msg1=Refuse]SellerAgent_RefuseBranch(u, v, CFP, PriceInfo, Refuse, Buy, Deliver, ReqPay, PaySuc, msg1) + [msg1=Buy]SellerAgent_BuyBranch(u, v, CFP, PriceInfo, Refuse, Buy, Deliver, ReqPay, PaySuc, msg1)))"
+        },
+        "SellerAgent_RefuseBranch": {
+            "params": [
+                "u",
+                "v",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "ReqPay",
+                "PaySuc",
+                "msg1"
+            ],
+            "body": "[msg1=Refuse]SellerAgent_main(u, v, CFP, PriceInfo, Refuse, Buy, Deliver, ReqPay, PaySuc)"
+        },
+        "SellerAgent_BuyBranch": {
+            "params": [
+                "u",
+                "v",
+                "CFP",
+                "PriceInfo",
+                "Refuse",
+                "Buy",
+                "Deliver",
+                "ReqPay",
+                "PaySuc",
+                "msg1"
+            ],
+            "body": "[msg1=Buy]'v<ReqPay>.v(msg2).[msg2=PaySuc]'u<Deliver>.SellerAgent_main(u, v, CFP, PriceInfo, Refuse, Buy, Deliver, ReqPay, PaySuc)"
+        },
+        "BankAgent_main": {
+            "params": [
+                "v",
+                "w",
+                "ReqPay",
+                "PaySuc",
+                "InfPay",
+                "Payment"
+            ],
+            "body": "v(msg).[msg=ReqPay]'w<InfPay>.w(msg1).[msg1=Payment]'v<PaySuc>.BankAgent_main(v, w, ReqPay, PaySuc, InfPay, Payment)"
+        },
+        "System_main": {
+            "params": [],
+            "body": "(^u)(^v)(^w)(^CFP)(^PriceInfo)(^Refuse)(^Buy)(^Deliver)(^ReqPay)(^PaySuc)(^InfPay)(^Payment) (BuyerAgent_main(u, w, CFP, PriceInfo, Refuse, Buy, Deliver, InfPay, Payment) | SellerAgent_main(u, v, CFP, PriceInfo, Refuse, Buy, Deliver, ReqPay, PaySuc) | BankAgent_main(v, w, ReqPay, PaySuc, InfPay, Payment))"
+        }
+    }
+}
